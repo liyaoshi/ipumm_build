@@ -6,7 +6,7 @@ CODEC_ENGINE_VERSION="3_24_00_08"
 XDAIS_VERSION="7_24_00_04"
 BIOS_VERSION="6_52_00_12"
 XDCTOOLS_VERSION="3_50_03_33"
-TI_CGT_BIN="ti_cgt_tms470_16.9.2.LTS_linux_installer_x86.bin" 
+TI_CGT_BIN="ti_cgt_tms470_16.9.2.LTS_linux_installer_x86.bin"
 CURRENT_DIR=`pwd`
 
 FRAMEWORK_COMP_WGET_URL="http://downloads.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/fc/$FRAMEWORK_COMP_VERSION/exports/framework_components_$FRAMEWORK_COMP_VERSION.tar.gz"
@@ -15,6 +15,7 @@ XDAIS_WGET_URL="http://downloads.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent
 BIOS_WGET_URL="http://downloads.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/bios/sysbios/$BIOS_VERSION/exports/bios_$BIOS_VERSION.run"
 XDCTOOLS_WGET_URL="http://downloads.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/rtsc/$XDCTOOLS_VERSION/exports/xdccore/xdctools_${XDCTOOLS_VERSION}_core_linux.zip"
 LINUXUTILS_WGET_URL="http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/linuxutils/$LINUXUTILS_VERSION/exports/linuxutils_$LINUXUTILS_VERSION.tar.gz"
+CPUNUMBER=`grep -c processor /proc/cpuinfo`
 
 if [ ! -d "component-sources" ]; then
 	mkdir "component-sources"
@@ -27,7 +28,7 @@ if [ ! -d "component-sources/framework_components_$FRAMEWORK_COMP_VERSION" ]; th
 	wget -nc $FRAMEWORK_COMP_WGET_URL
 	echo "Extracting framework components..."
 	tar -zxf framework_components_$FRAMEWORK_COMP_VERSION.tar.gz -C component-sources/
-	mv framework_components*.tar.gz component-sources/
+    mv framework_components*.tar.gz component-sources/
 fi
 if [ ! -d "component-sources/codec_engine_$CODEC_ENGINE_VERSION" ]; then
 	wget -nc $CODEC_ENGINE_WGET_URL
@@ -69,10 +70,11 @@ export IPCSRC=$IPC_INSTALL_DIR
 cd  $IPC_INSTALL_DIR
 git checkout   3.47.01.00 
 make -ef ipc-bios.mak clean
-make -ef ipc-bios.mak ti.targets.arm.elf.M4=$CGTOOLS_ARM
+make -ef ipc-bios.mak ti.targets.arm.elf.M4=$CGTOOLS_ARM JOBS="--jobs=$CPUNUMBER"
 
 
 cd $BASEDIR/ipumm
+export BIOSTOOLSROOT=$BASEDIR
 make omap5_smp_config
-make 
+make JOBS=$CPUNUMBER
 
