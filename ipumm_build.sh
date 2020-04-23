@@ -57,7 +57,7 @@ if [ ! -d "component-sources/xdctools_${XDCTOOLS_VERSION}_core" ]; then
 fi
 wget -nc  http://software-dl.ti.com/codegen/esd/cgt_public_sw/TMS470/18.12.5.LTS/$TI_CGT_BIN -O component-sources/$TI_CGT_BIN
 chmod +x component-sources/$TI_CGT_BIN
-$BASEDIR/component-sources/$TI_CGT_BIN --prefix ./component-sources/ --mode unattended 
+$BASEDIR/$TI_CGT_BIN --prefix ./component-sources/ --mode unattended 
 export IPC_INSTALL_DIR=$BASEDIR/ipc_3.50
 export DEPOT=$BASEDIR
 export XDC_INSTALL_DIR=$BASEDIR/xdctools_3_50_07_20_core
