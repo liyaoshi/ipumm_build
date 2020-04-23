@@ -4,9 +4,9 @@
 FRAMEWORK_COMP_VERSION="3_40_02_07"
 CODEC_ENGINE_VERSION="3_24_00_08"
 XDAIS_VERSION="7_24_00_04"
-BIOS_VERSION="6_52_00_12"
-XDCTOOLS_VERSION="3_50_03_33"
-TI_CGT_BIN="ti_cgt_tms470_16.9.2.LTS_linux_installer_x86.bin"
+BIOS_VERSION="6_73_00_12"
+XDCTOOLS_VERSION="3_50_07_20"
+TI_CGT_BIN="ti_cgt_tms470_18.12.5.LTS_linux_installer_x86.bin"
 CURRENT_DIR=`pwd`
 
 FRAMEWORK_COMP_WGET_URL="http://downloads.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/fc/$FRAMEWORK_COMP_VERSION/exports/framework_components_$FRAMEWORK_COMP_VERSION.tar.gz"
@@ -21,7 +21,7 @@ if [ ! -d "component-sources" ]; then
 	mkdir "component-sources"
 fi
 export BASEDIR=$CURRENT_DIR/component-sources
-git clone git://git.ti.com/ipc/ipcdev.git component-sources/ipc_3.47.01.00 --depth=1 
+git clone git://git.ti.com/ipc/ipcdev.git component-sources/ipc_3.50 -b 3.50 --depth=1 
 git clone git://git.ti.com/ivimm/ipumm.git component-sources/ipumm 
 
 if [ ! -d "component-sources/framework_components_$FRAMEWORK_COMP_VERSION" ]; then
@@ -55,22 +55,26 @@ if [ ! -d "component-sources/xdctools_${XDCTOOLS_VERSION}_core" ]; then
 	unzip xdctools_*.zip -d ./component-sources/
         mv xdctools_*.zip ./component-sources/.
 fi
-wget -nc  http://software-dl.ti.com/codegen/esd/cgt_public_sw/TMS470/16.9.2.LTS/$TI_CGT_BIN -O component-sources/$TI_CGT_BIN
+wget -nc  http://software-dl.ti.com/codegen/esd/cgt_public_sw/TMS470/18.12.5.LTS/$TI_CGT_BIN -O component-sources/$TI_CGT_BIN
 chmod +x component-sources/$TI_CGT_BIN
-component-sources/$TI_CGT_BIN --prefix ./component-sources/ --mode unattended 
-export IPC_INSTALL_DIR=$BASEDIR/ipc_3.47.01.00
+$BASEDIR/component-sources/$TI_CGT_BIN --prefix ./component-sources/ --mode unattended 
+export IPC_INSTALL_DIR=$BASEDIR/ipc_3.50
 export DEPOT=$BASEDIR
-export XDC_INSTALL_DIR=$BASEDIR/xdctools_3_50_03_33_core
-export BIOS_INSTALL_DIR=$BASEDIR/bios_6_52_00_12
-export CGTOOLS_ARM=$BASEDIR/ti-cgt-arm_16.9.2.LTS
+export XDC_INSTALL_DIR=$BASEDIR/xdctools_3_50_07_20_core
+export BIOS_INSTALL_DIR=$BASEDIR/bios_6_73_00_12
+export CGTOOLS_ARM=$BASEDIR/ti-cgt-arm_18.12.5.LTS
 export TMS470CGTOOLPATH=$CGTOOLS_ARM
 export HWVERSION=ES20
 export IPCSRC=$IPC_INSTALL_DIR
 
+echo  $CGTOOLS_ARM
+echo  $CGTOOLS_ARM
+echo  $CGTOOLS_ARM
+
+
 cd  $IPC_INSTALL_DIR
-git checkout   3.47.01.00 
 make -ef ipc-bios.mak clean
-make -ef ipc-bios.mak ti.targets.arm.elf.M4=$CGTOOLS_ARM JOBS="--jobs=$CPUNUMBER"
+make -ef ipc-bios.mak PLATFORM=OMAP54XX ti.targets.arm.elf.M4=${CGTOOLS_ARM} JOBS="--jobs=$CPUNUMBER"
 
 
 cd $BASEDIR/ipumm
